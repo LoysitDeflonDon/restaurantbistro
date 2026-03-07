@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Le Bistro | Французский ресторан</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Нижняя навигация (мобильная) -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-page="home">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </a>
+        <a href="#" class="nav-item" data-page="menu">
+            <i class="fas fa-utensils"></i>
+            <span>Меню</span>
+        </a>
+        <a href="#" class="nav-item" data-page="about">
+            <i class="fas fa-info-circle"></i>
+            <span>О нас</span>
+        </a>
+        <a href="#" class="nav-item" data-page="reviews">
+            <i class="fas fa-star"></i>
+            <span>Отзывы</span>
+        </a>
+        <a href="#" class="nav-item" data-page="contact">
+            <i class="fas fa-phone-alt"></i>
+            <span>Контакты</span>
+        </a>
+    </nav>
+
+    <!-- Верхний хедер -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">Le Bistro</h1>
+            <p class="header-date">Est. 2026</p>
+        </div>
+    </header>
+
+    <!-- КОНТЕЙНЕР ДЛЯ СТРАНИЦ -->
+    <main id="page-container">
+        <!-- ===== ГЛАВНАЯ ===== -->
+        <section id="home" class="page active">
+            <div class="hero" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=600');">
+                <div class="hero-content">
+                    <h2>Добро пожаловать!</h2>
+                    <p>Французский ресторан в центре Москвы</p>
+                    <button class="btn" onclick="navigateTo('menu')">Наше меню</button>
+                </div>
+            </div>
+
+            <div class="container">
+                <h2 class="section-title">Почему мы?</h2>
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-crown"></i>
+                        <h3>Шеф из Франции с острова Эпштейна</h3>
+                        <p>Антуан Дюбуа с 20-летним опытом</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-wine-bottle"></i>
+                        <h3>Винная карта</h3>
+                        <p>Более 50 сортов вина</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-music"></i>
+                        <h3>Живая музыка</h3>
+                        <p>Каждую пятницу и субботу</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-birthday-cake"></i>
+                        <h3>Банкеты</h3>
+                        <p>До 50 человек</p>
+                    </div>
+                </div>
+
+                <div class="special-offer">
+                    <h3>Спецпредложение марта 2026</h3>
+                    <p>При бронировании столика - бокал шампанского в подарок!</p>
+                    <button class="btn btn-small" onclick="navigateTo('contact')">Забронировать</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== МЕНЮ ===== -->
+        <section id="menu" class="page">
+            <div class="container">
+                <h2 class="section-title">Наше меню</h2>
+                
+                <div class="menu-categories">
+                    <button class="category-btn active" data-category="all">Все</button>
+                    <button class="category-btn" data-category="starters">Закуски</button>
+                    <button class="category-btn" data-category="main">Горячее</button>
+                    <button class="category-btn" data-category="desserts">Десерты</button>
+                    <button class="category-btn" data-category="drinks">Напитки</button>
+                </div>
+
+                <div class="menu-list" id="menuList">
+                    <!-- ЗАКУСКИ (2 шт) -->
+                    <div class="menu-item" data-category="starters">
+                        <img src="https://imgbb.com/"><img src="https://i.ibb.co/LXDJDp36/sandwiches-with-baked-cherry-tomatoes-cottage-cheese-herbs-light-surface-top-view-253362-5838.avif" alt="Брускетта" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Брускетта с томатами</h3>
+                                <span class="menu-price">590 ₽</span>
+                            </div>
+                            <p class="menu-desc">Хрустящий хлеб, вяленые томаты, базилик, оливковое масло</p>
+                            <span class="menu-weight">180 г</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" data-category="starters">
+                        <img src="https://ibb.co/wHGrB4P"><img src="https://i.ibb.co/bhwRQXC/klassicheskiy-variant-karpachcho-e1535716745892.jpg" alt="Карпаччо" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Карпаччо из говядины</h3>
+                                <span class="menu-price">890 ₽</span>
+                            </div>
+                            <p class="menu-desc">Тонко нарезанная говядина, руккола, пармезан, соус песто</p>
+                            <span class="menu-weight">200 г</span>
+                        </div>
+                    </div>
+
+                    <!-- ГОРЯЧЕЕ (3 шт) -->
+                    <div class="menu-item" data-category="main">
+                        <img src="https://images.pexels.com/photos/1251208/pexels-photo-1251208.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Стейк" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Стейк Рибай</h3>
+                                <span class="menu-price">2450 ₽</span>
+                            </div>
+                            <p class="menu-desc">Мраморная говядина с соусом из красного вина</p>
+                            <span class="menu-weight">350 г</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" data-category="main">
+                        <img src="https://imgbb.com/"><img src="https://i.ibb.co/XxwmcGVr/pasta-carbonara-spaghetti-with-bacon-parsel-parmesan-cheese-pasta-carbonara-black-plate-with-parmesa.avif" alt="Паста" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Паста Карбонара</h3>
+                                <span class="menu-price">890 ₽</span>
+                            </div>
+                            <p class="menu-desc">Домашняя паста, бекон, яйцо, сыр пекорино</p>
+                            <span class="menu-weight">320 г</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" data-category="main">
+                        <img src="https://ibb.co/dwSYG8tk"><img src="https://i.ibb.co/ycDjWHpg/5fa145b37f7520f-upscaled.jpg" alt="Утка" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Утиная ножка конфи</h3>
+                                <span class="menu-price">1850 ₽</span>
+                            </div>
+                            <p class="menu-desc">С апельсиновым соусом и картофельным гратеном</p>
+                            <span class="menu-weight">400 г</span>
+                        </div>
+                    </div>
+
+                    <!-- ДЕСЕРТЫ (2 шт) -->
+                    <div class="menu-item" data-category="desserts">
+                        <img src="https://i.ibb.co/2YKjFSNk/tiramisu-cake-with-cocoa-coffee-black-background-123827-29270.avif" alt="Тирамису" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Тирамису</h3>
+                                <span class="menu-price">590 ₽</span>
+                            </div>
+                            <p class="menu-desc">Классический десерт с маскарпоне и кофе</p>
+                            <span class="menu-weight">150 г</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item" data-category="desserts">
+                        <img src="https://ibb.co/mCKDx75z"><img src="https://i.ibb.co/RpKv5WTH/8a1e202f96b730184e3dd5c939fb93a2.jpg" alt="Чизкейк" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Нью-Йорк чизкейк</h3>
+                                <span class="menu-price">550 ₽</span>
+                            </div>
+                            <p class="menu-desc">С ягодным соусом</p>
+                            <span class="menu-weight">160 г</span>
+                        </div>
+                    </div>
+
+                    <!-- НАПИТКИ (1 шт) -->
+                    <div class="menu-item" data-category="drinks">
+                        <img src="https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Кофе" class="menu-img">
+                        <div class="menu-info">
+                            <div class="menu-header">
+                                <h3>Кофе по-французски</h3>
+                                <span class="menu-price">350 ₽</span>
+                            </div>
+                            <p class="menu-desc">С коньяком и взбитыми сливками</p>
+                            <span class="menu-weight">200 мл</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== О НАС ===== -->
+        <section id="about" class="page">
+            <div class="container">
+                <h2 class="section-title">О ресторане</h2>
+                
+                <div class="about-card">
+                    <img src="https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Интерьер" class="about-img">
+                    <div class="about-text">
+                        <p>Le Bistro открылся в <strong>январе 2026 года</strong> и сразу завоевал любовь гостей. Наш шеф-повар Антуан Дюбуа — потомственный французский кулинар с 20-летним опытом работы в ресторанах Парижа и Лиона.</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-number">2026</span>
+                        <span>Год открытия</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">50+</span>
+                        <span>Блюд</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number">1000+</span>
+                        <span>Гостей</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== ОТЗЫВЫ ===== -->
+        <section id="reviews" class="page">
+            <div class="container">
+                <h2 class="section-title">Отзывы гостей</h2>
+                
+                <div class="reviews-list">
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Анна Смирнова</span>
+                            <span class="review-date">15.01.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Отмечали здесь Новый год! Атмосфера сказочная, кухня на высоте. Шеф-повар лично вышел поздравить гостей. Обязательно вернемся!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Дмитрий Козлов</span>
+                            <span class="review-date">03.02.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Лучшее место для деловых встреч! Тихо, уютно, очень вкусный бизнес-ланч. Персонал внимательный, все на высшем уровне.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Елена и Михаил</span>
+                            <span class="review-date">20.02.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Были на свидании в День всех влюбленных! Романтичная обстановка, живая музыка, специальное меню. Нам подарили по бокалу шампанского.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Сергей Петров</span>
+                            <span class="review-date">01.03.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Отмечали день рождения жены. Отдельный зал на 15 человек, персональный официант, торт со свечами в подарок. Все гости были в восторге!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Михаил Иванов</span>
+                            <span class="review-date">08.03.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Пришли с супругой на 8 марта. Для всех женщин сделали скидку 20% и подарили по цветку. Очень приятно! Еда вкусная, вино отличное.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Ольга Соколова</span>
+                            <span class="review-date">15.03.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Наконец-то открыли летнюю веранду! Очень уютно, играет приятная музыка, попробовали новое летнее меню. Лимонный десерт просто бомба!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Игорь Волков</span>
+                            <span class="review-date">22.03.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Был проездом в Москве, зашел поужинать. Очень порадовал сервис и качество блюд. Стейк рибай просто таял во рту. Рекомендую!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Татьяна Морозова</span>
+                            <span class="review-date">05.04.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Хороший ресторан, вкусная еда, приятная атмосфера. Немного долго ждали заказ, но официант извинился и предложил комплимент от шефа.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Алексей Морозов</span>
+                            <span class="review-date">12.04.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Обалденная винная карта! Сомелье помог с выбором, вино идеально подошло к стейку. Обязательно приду еще.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Мария Соколова</span>
+                            <span class="review-date">20.04.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Ходили всей семьей. Детское меню порадовало, есть где раздеться и покормить малыша. Очень приветливый персонал.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Компания Мегаполис</span>
+                            <span class="review-date">25.04.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Были на корпоративе. Отличное обслуживание, вкусная еда, красивая подача. Отдельное спасибо за караоке!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Наталья Петрова</span>
+                            <span class="review-date">01.05.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Лучший ресторан французской кухни в Москве! Луковый суп бесподобен, а утка конфи тает во рту. Спасибо!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Андрей Сидоров</span>
+                            <span class="review-date">10.05.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Очень уютное место. Цены адекватные, порции большие. Обслуживание быстрое. Рекомендую для свиданий.</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Екатерина Волкова</span>
+                            <span class="review-date">18.05.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Отмечали 8 Марта. Сделали красивую подачу, поздравили, подарили цветы. Очень приятно. Спасибо!</p>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-name">Денис Козлов</span>
+                            <span class="review-date">25.05.2026</span>
+                        </div>
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-text">Отличное место. Очень вкусный стейк Рибай и тирамису. Приятная атмосфера. Буду рекомендовать друзьям!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== КОНТАКТЫ ===== -->
+        <section id="contact" class="page">
+            <div class="container">
+                <h2 class="section-title">Контакты</h2>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Адрес</h4>
+                            <p>ул. Питерская, 15, Москва</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <div>
+                            <h4>Телефон</h4>
+                            <p><a href="tel:+7996936635">+7 (996) 693-66-35</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:LeBistro228@LeBistro.ru">LeBistro228@yandex.ru</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Часы работы</h4>
+                            <p>Пн-Вс: 10:00 - 23:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="form-title">Забронировать столик</h3>
+                <form id="bookingForm" class="booking-form">
+                    <input type="text" id="name" placeholder="Ваше имя" class="form-input">
+                    <div class="error-message" id="nameError">Введите имя</div>
+                    
+                    <input type="tel" id="phone" placeholder="Телефон" class="form-input">
+                    <div class="error-message" id="phoneError">Введите телефон</div>
+                    
+                    <div class="form-row">
+                        <input type="date" id="date" class="form-input">
+                        <input type="time" id="time" class="form-input">
+                    </div>
+                    <div class="error-message" id="dateError">Выберите дату</div>
+                    <div class="error-message" id="timeError">Время с 12 до 23</div>
+                    
+                    <select id="guests" class="form-input">
+                        <option value="1">1 гость</option>
+                        <option value="2" selected>2 гостя</option>
+                        <option value="3">3 гостя</option>
+                        <option value="4">4 гостя</option>
+                        <option value="5">5 гостей</option>
+                        <option value="6">6+ гостей</option>
+                    </select>
+                    
+                    <button type="submit" class="btn btn-block">Забронировать</button>
+                </form>
+
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle"></i>
+            <h3>Спасибо!</h3>
+            <p>Бронирование отправлено. Мы перезвоним вам.</p>
+            <button class="btn" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
