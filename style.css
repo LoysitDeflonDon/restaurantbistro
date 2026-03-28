@@ -234,52 +234,56 @@ body {
 }
 
 .menu-item {
-    display: flex;
     background: white;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    align-items: center;
+    display: block;  /* ← Делаем карточку вертикальной */
 }
 
 .menu-img {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 160px;
     object-fit: cover;
-    flex-shrink: 0;
-    margin: 12px; 
-    border-radius: 10px; 
+    display: block;
 }
 
 .menu-info {
     padding: 12px;
-    flex: 1;
 }
 
 .menu-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4px;
+    align-items: center;
+    margin-bottom: 6px;
 }
 
 .menu-header h3 {
     font-size: 1rem;
+    font-weight: 600;
 }
 
 .menu-price {
     font-weight: bold;
     color: #e67e22;
+    font-size: 1rem;
 }
 
 .menu-desc {
     font-size: 0.85rem;
     color: #666;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.4;
 }
 
 .menu-weight {
     font-size: 0.75rem;
     color: #999;
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 20px;
 }
 
 .about-card {
