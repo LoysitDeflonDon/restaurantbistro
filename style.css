@@ -239,6 +239,7 @@ body {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    align-items: center;
 }
 
 .menu-img {
@@ -246,6 +247,8 @@ body {
     height: 100px;
     object-fit: cover;
     flex-shrink: 0;
+    margin: 12px; 
+    border-radius: 10px; 
 }
 
 .menu-info {
