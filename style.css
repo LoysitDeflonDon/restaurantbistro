@@ -198,7 +198,7 @@ body {
 }
 
 .hero-content {
-    padding: 40px 24px;
+    padding: 40px 24px 30px;
     width: 100%;
     background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
 }
@@ -232,12 +232,13 @@ body {
 
 .hero-scroll {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
     color: var(--white);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     animation: bounce 2s infinite;
+    opacity: 0.8;
 }
 
 @keyframes bounce {
@@ -267,6 +268,13 @@ body {
     background: var(--primary);
     color: var(--white);
     box-shadow: 0 4px 15px rgba(232, 93, 4, 0.3);
+}
+
+.btn-primary i {
+    margin-left: 6px;
+    font-size: 0.9rem;
+    position: relative;
+    top: 1px;
 }
 
 .btn-primary:active {
