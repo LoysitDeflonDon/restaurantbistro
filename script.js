@@ -1,3 +1,4 @@
+// Навигация
 const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');
 
@@ -31,7 +32,7 @@ navItems.forEach(item => {
 
 window.navigateTo = navigateTo;
 
-// Фильтрация меню
+// Фильтрация меню (ИСПРАВЛЕНО)
 const categoryBtns = document.querySelectorAll('.category-btn');
 const menuItems = document.querySelectorAll('.menu-item');
 
@@ -45,7 +46,7 @@ if (categoryBtns.length) {
             
             menuItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category) {
-                    item.style.display = 'flex';
+                    item.style.display = 'block'; // Исправлено: block вместо flex
                 } else {
                     item.style.display = 'none';
                 }
@@ -89,7 +90,7 @@ if (bookingForm) {
     function validatePhone() {
         const phone = phoneInput.value.trim();
         const digits = phone.replace(/\D/g, '');
-        if (digits.length < 10 || digits.length > 11) {
+        if (digits.length < 10 || digits.length > 12) {
             phoneInput.classList.add('input-error');
             phoneError.style.display = 'block';
             return false;
@@ -117,7 +118,7 @@ if (bookingForm) {
             return false;
         }
         const [hours] = timeInput.value.split(':').map(Number);
-        if (hours < 12 || hours > 23) {
+        if (hours < 10 || hours > 23) { // Исправлено: с 10:00 до 23:00
             timeInput.classList.add('input-error');
             timeError.style.display = 'block';
             return false;
@@ -146,7 +147,7 @@ if (bookingForm) {
             
             setTimeout(() => {
                 modal.style.display = 'none';
-            }, 3000);
+            }, 4000);
         }
     });
 }
@@ -166,6 +167,7 @@ window.onclick = (e) => {
     }
 };
 
+// Инициализация
 document.addEventListener('DOMContentLoaded', () => {
     const activePage = document.querySelector('.page.active');
     if (!activePage) {
@@ -176,5 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dateInput) {
         const today = new Date().toISOString().split('T')[0];
         dateInput.setAttribute('min', today);
+    }
+    
+    // Установка минимальной даты
+    if (dateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
     }
 });
