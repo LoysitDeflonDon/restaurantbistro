@@ -1,17 +1,20 @@
-// Навигация
+// ========== НАВИГАЦИЯ ==========
 const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');
 
 function navigateTo(pageId) {
+    // Скрываем все страницы
     pages.forEach(page => {
         page.classList.remove('active');
     });
     
+    // Показываем нужную
     const activePage = document.getElementById(pageId);
     if (activePage) {
         activePage.classList.add('active');
     }
     
+    // Обновляем активную кнопку в меню
     navItems.forEach(item => {
         item.classList.remove('active');
         if (item.dataset.page === pageId) {
@@ -19,26 +22,36 @@ function navigateTo(pageId) {
         }
     });
     
+    // Скроллим наверх
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Вешаем обработчики на кнопки навигации
 navItems.forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const pageId = item.dataset.page;
-        navigateTo(pageId);
+        if (pageId) {
+            navigateTo(pageId);
+        }
     });
 });
 
+// Делаем функцию глобальной (для onclick в HTML)
 window.navigateTo = navigateTo;
 
-// Фильтрация меню (ИСПРАВЛЕНО)
+// ========== ФИЛЬТРАЦИЯ МЕНЮ ==========
 const categoryBtns = document.querySelectorAll('.category-btn');
 const menuItems = document.querySelectorAll('.menu-item');
 
 if (categoryBtns.length) {
     categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Убираем активный класс у всех кнопок
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -46,7 +59,7 @@ if (categoryBtns.length) {
             
             menuItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category) {
-                    item.style.display = 'block'; // Исправлено: block вместо flex
+                    item.style.display = 'block';
                 } else {
                     item.style.display = 'none';
                 }
@@ -55,7 +68,7 @@ if (categoryBtns.length) {
     });
 }
 
-// Валидация формы
+// ========== ФОРМА БРОНИРОВАНИЯ ==========
 const bookingForm = document.getElementById('bookingForm');
 const modal = document.getElementById('successModal');
 
@@ -70,11 +83,7 @@ if (bookingForm) {
     const dateError = document.getElementById('dateError');
     const timeError = document.getElementById('timeError');
     
-    const today = new Date().toISOString().split('T')[0];
-    if (dateInput) {
-        dateInput.setAttribute('min', today);
-    }
-    
+    // Функции валидации
     function validateName() {
         const name = nameInput.value.trim();
         if (name.length < 2) {
@@ -118,7 +127,7 @@ if (bookingForm) {
             return false;
         }
         const [hours] = timeInput.value.split(':').map(Number);
-        if (hours < 10 || hours > 23) { // Исправлено: с 10:00 до 23:00
+        if (hours < 10 || hours > 23) {
             timeInput.classList.add('input-error');
             timeError.style.display = 'block';
             return false;
@@ -128,77 +137,90 @@ if (bookingForm) {
         return true;
     }
     
+    // Вешаем валидацию на события
     nameInput.addEventListener('input', validateName);
     phoneInput.addEventListener('input', validatePhone);
     dateInput.addEventListener('change', validateDate);
     timeInput.addEventListener('change', validateTime);
     
+    // Отправка формы
     bookingForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    if (!validateName() || !validatePhone() || !validateDate() || !validateTime()) return;
-    
-    const bookingData = {
-        name: nameInput.value.trim(),
-        phone: phoneInput.value.trim(),
-        date: dateInput.value,
-        time: timeInput.value,
-        guests: document.getElementById('guests').value
-    };
-    
-    try {
-        const response = await fetch('http://localhost:3000/api/book', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bookingData)
-        });
+        e.preventDefault();
+        e.stopPropagation();
         
-        if (response.ok) {
-            modal.style.display = 'flex';
-            bookingForm.reset();
-            setTimeout(() => modal.style.display = 'none', 4000);
-        } else {
-            alert('Ошибка при бронировании');
+        if (!validateName() || !validatePhone() || !validateDate() || !validateTime()) return;
+        
+        const bookingData = {
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            date: dateInput.value,
+            time: timeInput.value,
+            guests: document.getElementById('guests').value
+        };
+        
+        try {
+            const response = await fetch('http://localhost:3000/api/book', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookingData)
+            });
+            
+            if (response.ok) {
+                modal.style.display = 'flex';
+                bookingForm.reset();
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 4000);
+            } else {
+                alert('Ошибка при бронировании');
+            }
+        } catch (err) {
+            alert('Сервер не запущен');
         }
-    } catch (err) {
-        alert('Сервер не запущен');
-    }
-});
+    });
+}
 
-// Модальное окно
+// ========== МОДАЛЬНОЕ ОКНО ==========
 function closeModal() {
     if (modal) {
         modal.style.display = 'none';
     }
 }
-
 window.closeModal = closeModal;
 
+// Закрытие по клику вне модалки
 window.onclick = (e) => {
     if (e.target === modal) {
         modal.style.display = 'none';
     }
 };
 
-// Инициализация
+// ========== ПРИ ЗАГРУЗКЕ ==========
 document.addEventListener('DOMContentLoaded', () => {
+    // Проверяем, есть ли активная страница, если нет — показываем home
     const activePage = document.querySelector('.page.active');
     if (!activePage) {
         navigateTo('home');
     }
     
+    // Устанавливаем минимальную дату в форме
     const dateInput = document.getElementById('date');
     if (dateInput) {
         const today = new Date().toISOString().split('T')[0];
         dateInput.setAttribute('min', today);
     }
-    
-    // Установка минимальной даты
-    if (dateInput) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.min = `${yyyy}-${mm}-${dd}`;
-    }
 });
+
+// ========== ДЛЯ КНОПКИ FAB (плавающая кнопка) ==========
+const fabBook = document.querySelector('.fab-book');
+if (fabBook) {
+    fabBook.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigateTo('contact');
+        setTimeout(() => {
+            const nameField = document.getElementById('name');
+            if (nameField) nameField.focus();
+        }, 100);
+    });
+}
