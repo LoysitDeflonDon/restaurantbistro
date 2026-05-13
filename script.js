@@ -133,24 +133,37 @@ if (bookingForm) {
     dateInput.addEventListener('change', validateDate);
     timeInput.addEventListener('change', validateTime);
     
-    bookingForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    bookingForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!validateName() || !validatePhone() || !validateDate() || !validateTime()) return;
+    
+    const bookingData = {
+        name: nameInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        date: dateInput.value,
+        time: timeInput.value,
+        guests: document.getElementById('guests').value
+    };
+    
+    try {
+        const response = await fetch('http://localhost:3000/api/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+        });
         
-        const isNameValid = validateName();
-        const isPhoneValid = validatePhone();
-        const isDateValid = validateDate();
-        const isTimeValid = validateTime();
-        
-        if (isNameValid && isPhoneValid && isDateValid && isTimeValid) {
+        if (response.ok) {
             modal.style.display = 'flex';
             bookingForm.reset();
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 4000);
+            setTimeout(() => modal.style.display = 'none', 4000);
+        } else {
+            alert('Ошибка при бронировании');
         }
-    });
-}
+    } catch (err) {
+        alert('Сервер не запущен');
+    }
+});
 
 // Модальное окно
 function closeModal() {
