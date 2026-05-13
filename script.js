@@ -1,8 +1,10 @@
-// ========== НАВИГАЦИЯ ==========
+// ========== НАВИГАЦИЯ (ФИКС ДЛЯ ТЕЛЕФОНОВ) ==========
 const navItems = document.querySelectorAll('.nav-item');
 const pages = document.querySelectorAll('.page');
 
 function navigateTo(pageId) {
+    console.log('Переход на:', pageId); // Для отладки
+    
     // Скрываем все страницы
     pages.forEach(page => {
         page.classList.remove('active');
@@ -14,7 +16,7 @@ function navigateTo(pageId) {
         activePage.classList.add('active');
     }
     
-    // Обновляем активную кнопку в меню
+    // Обновляем активную кнопку
     navItems.forEach(item => {
         item.classList.remove('active');
         if (item.dataset.page === pageId) {
@@ -22,12 +24,25 @@ function navigateTo(pageId) {
         }
     });
     
-    // Скроллим наверх
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Скроллим наверх (обязательно через setTimeout для телефонов)
+    setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 50);
 }
 
-// Вешаем обработчики на кнопки навигации
+// ФИКС ДЛЯ ТЕЛЕФОНОВ: используем touchstart и click
 navItems.forEach(item => {
+    // Для телефонов
+    item.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const pageId = item.dataset.page;
+        if (pageId) {
+            navigateTo(pageId);
+        }
+    });
+    
+    // Для компа (оставляем)
     item.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -38,7 +53,7 @@ navItems.forEach(item => {
     });
 });
 
-// Делаем функцию глобальной (для onclick в HTML)
+// Делаем функцию глобальной
 window.navigateTo = navigateTo;
 
 // ========== ФИЛЬТРАЦИЯ МЕНЮ ==========
@@ -51,7 +66,6 @@ if (categoryBtns.length) {
             e.preventDefault();
             e.stopPropagation();
             
-            // Убираем активный класс у всех кнопок
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -64,6 +78,13 @@ if (categoryBtns.length) {
                     item.style.display = 'none';
                 }
             });
+        });
+        
+        // Для телефонов
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btn.click();
         });
     });
 }
@@ -83,7 +104,6 @@ if (bookingForm) {
     const dateError = document.getElementById('dateError');
     const timeError = document.getElementById('timeError');
     
-    // Функции валидации
     function validateName() {
         const name = nameInput.value.trim();
         if (name.length < 2) {
@@ -137,18 +157,22 @@ if (bookingForm) {
         return true;
     }
     
-    // Вешаем валидацию на события
     nameInput.addEventListener('input', validateName);
     phoneInput.addEventListener('input', validatePhone);
     dateInput.addEventListener('change', validateDate);
     timeInput.addEventListener('change', validateTime);
     
-    // Отправка формы
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         
         if (!validateName() || !validatePhone() || !validateDate() || !validateTime()) return;
+        
+        // Для телефона: показываем индикатор загрузки
+        const submitBtn = bookingForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+        submitBtn.disabled = true;
         
         const bookingData = {
             name: nameInput.value.trim(),
@@ -176,11 +200,14 @@ if (bookingForm) {
             }
         } catch (err) {
             alert('Сервер не запущен');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     });
 }
 
-// ========== МОДАЛЬНОЕ ОКНО ==========
+// ========== МОДАЛКА ==========
 function closeModal() {
     if (modal) {
         modal.style.display = 'none';
@@ -188,7 +215,6 @@ function closeModal() {
 }
 window.closeModal = closeModal;
 
-// Закрытие по клику вне модалки
 window.onclick = (e) => {
     if (e.target === modal) {
         modal.style.display = 'none';
@@ -197,13 +223,11 @@ window.onclick = (e) => {
 
 // ========== ПРИ ЗАГРУЗКЕ ==========
 document.addEventListener('DOMContentLoaded', () => {
-    // Проверяем, есть ли активная страница, если нет — показываем home
     const activePage = document.querySelector('.page.active');
     if (!activePage) {
         navigateTo('home');
     }
     
-    // Устанавливаем минимальную дату в форме
     const dateInput = document.getElementById('date');
     if (dateInput) {
         const today = new Date().toISOString().split('T')[0];
@@ -211,10 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ========== ДЛЯ КНОПКИ FAB (плавающая кнопка) ==========
+// ========== ПЛАВАЮЩАЯ КНОПКА ==========
 const fabBook = document.querySelector('.fab-book');
 if (fabBook) {
-    fabBook.addEventListener('click', (e) => {
+    const handleFab = (e) => {
         e.preventDefault();
         e.stopPropagation();
         navigateTo('contact');
@@ -222,5 +246,8 @@ if (fabBook) {
             const nameField = document.getElementById('name');
             if (nameField) nameField.focus();
         }, 100);
-    });
+    };
+    
+    fabBook.addEventListener('click', handleFab);
+    fabBook.addEventListener('touchstart', handleFab);
 }
