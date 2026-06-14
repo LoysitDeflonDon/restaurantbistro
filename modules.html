@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модульная документация | Le Bistro Noir</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .docs-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #222;
+        }
+        .docs-container h1 { color: #c7a252; margin-bottom: 30px; }
+        .docs-container h2 { color: #c7a252; margin: 30px 0 15px; border-left: 3px solid #c7a252; padding-left: 15px; }
+        .docs-container h3 { color: #c7a252; margin: 20px 0 10px; }
+        .docs-container p, .docs-container li { color: #ccc; line-height: 1.6; margin-bottom: 10px; }
+        .module-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+        .module-card h3 { margin-top: 0; }
+        .code-block {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #333;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #c7a252;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">LE BISTRO NOIR</h1>
+            <div class="header-badge">
+                <span class="header-date">Est. 2026</span>
+                <a href="tel:+7996936635" class="header-phone"><i class="fas fa-phone-alt"></i> +7 (996) 693-66-35</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <h1>🧩 Модульная документация</h1>
+        <p>Структура и описание всех модулей веб-сайта «Le Bistro Noir».</p>
+
+        <div class="module-card">
+            <h3>📦 Модуль 1: Авторизация и регистрация (auth)</h3>
+            <p><strong>Файл:</strong> script.js (функции register, login, logout)</p>
+            <p><strong>Назначение:</strong> Управление пользовательскими сессиями, регистрация новых пользователей, вход в аккаунт.</p>
+            <p><strong>Зависимости:</strong> JSONBin API (users_bin)</p>
+            <p><strong>Интерфейс:</strong> register(name, email, phone, password), login(email, password)</p>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 2: Управление бронированиями (booking)</h3>
+            <p><strong>Файл:</strong> script.js (функция addBooking)</p>
+            <p><strong>Назначение:</strong> Создание, хранение и отображение бронирований столиков.</p>
+            <p><strong>Зависимости:</strong> JSONBin API (bookings_bin), модуль авторизации</p>
+            <p><strong>Интерфейс:</strong> addBooking(userId, name, phone, date, time, guests)</p>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 3: Отображение меню (menu)</h3>
+            <p><strong>Файл:</strong> script.js (функции renderMenu, фильтрация)</p>
+            <p><strong>Назначение:</strong> Рендеринг списка блюд с категориями и картинками.</p>
+            <p><strong>Данные:</strong> Локальный массив menuData (12 блюд)</p>
+            <p><strong>Интерфейс:</strong> renderMenu(filter)</p>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 4: Админ-панель (admin)</h3>
+            <p><strong>Файл:</strong> admin.html</p>
+            <p><strong>Назначение:</strong> Управление пользователями (блокировка/удаление) и бронированиями (удаление).</p>
+            <p><strong>Зависимости:</strong> JSONBin API (users_bin, bookings_bin)</p>
+            <p><strong>Интерфейс:</strong> toggleBlockUser, deleteUser, deleteBooking</p>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 5: Работа с JSONBin (jsonbin-client)</h3>
+            <p><strong>Файл:</strong> script.js, admin.html</p>
+            <p><strong>Назначение:</strong> CRUD-операции с облачным хранилищем.</p>
+            <div class="code-block">
+                // Чтение данных
+                async function fetchBin(binId) { ... }
+                // Запись данных
+                async function updateBin(binId, data) { ... }
+            </div>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 6: UI-компоненты (ui)</h3>
+            <p><strong>Файл:</strong> script.js, style.css</p>
+            <p><strong>Назначение:</strong> Нижняя навигация, переключение страниц, модальные окна, формы.</p>
+            <p><strong>Компоненты:</strong> bottom-nav, modal, формы логина/регистрации, фильтры меню.</p>
+        </div>
+
+        <div class="module-card">
+            <h3>📦 Модуль 7: Валидация данных (validation)</h3>
+            <p><strong>Файл:</strong> script.js</p>
+            <p><strong>Функции:</strong> validatePhone (строго 11 цифр), проверка длины имени и пароля.</p>
+        </div>
+
+        <h2>Архитектура приложения</h2>
+        <p>Сайт построен по принципу SPA (Single Page Application) с подгрузкой данных из JSONBin. Все пользовательские данные хранятся в облаке, состояние сессии — в localStorage.</p>
+
+        <div class="code-block">
+            Структура данных JSONBin:
+
+            // users_bin
+            { "users": [
+                { "id": 123, "name": "...", "email": "...", "phone": "...", "password": "...", "blocked": false }
+            ] }
+
+            // bookings_bin
+            { "bookings": [
+                { "id": 456, "userId": 123, "name": "...", "phone": "...", "date": "...", "time": "...", "guests": 2 }
+            ] }
+        </div>
+
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Главная</span></a>
+        <a href="menu.html" class="nav-item"><i class="fas fa-utensils"></i><span>Меню</span></a>
+        <a href="booking.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Бронь</span></a>
+        <a href="account.html" class="nav-item"><i class="fas fa-user"></i><span>Профиль</span></a>
+    </nav>
+</body>
+</html>
