@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Функциональное тестирование | Le Bistro Noir</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .docs-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #222;
+        }
+        .docs-container h1 { color: #c7a252; margin-bottom: 30px; }
+        .docs-container h2 { color: #c7a252; margin: 30px 0 15px; }
+        .docs-container p, .docs-container li { color: #ccc; line-height: 1.6; }
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .test-table th, .test-table td {
+            padding: 12px;
+            border: 1px solid #333;
+            text-align: left;
+        }
+        .test-table th {
+            background: #1a1a1a;
+            color: #c7a252;
+        }
+        .status-pass { color: #44ff44; }
+        .status-fail { color: #ff4444; }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #c7a252;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">LE BISTRO NOIR</h1>
+            <div class="header-badge">
+                <span class="header-date">Est. 2026</span>
+                <a href="tel:+7996936635" class="header-phone"><i class="fas fa-phone-alt"></i> +7 (996) 693-66-35</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <h1>✅ Функциональное тестирование</h1>
+        <p>Отчёт о проверке всех функций веб-сайта ресторана «Le Bistro Noir».</p>
+
+        <h2>1. Регистрация пользователя</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Регистрация с корректными данными</td><td>Успешная регистрация, уведомление</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Регистрация с существующим email</td><td>Ошибка «Email уже существует»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Регистрация с телефоном не 11 цифр</td><td>Ошибка валидации телефона</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Регистрация с пустым именем</td><td>Ошибка «Минимум 2 буквы»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Регистрация с коротким паролем (&lt;6 символов)</td><td>Ошибка валидации пароля</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <h2>2. Авторизация (логин)</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Вход с правильными данными</td><td>Успешный вход, отображение профиля</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Вход с неправильным паролем</td><td>Ошибка «Неверный email или пароль»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Вход с несуществующим email</td><td>Ошибка «Неверный email или пароль»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Вход заблокированного пользователя</td><td>Ошибка «Аккаунт заблокирован»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <h2>3. Бронирование столика</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Бронирование авторизованным пользователем</td><td>Успешное создание брони</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Бронирование без авторизации</td><td>Ошибка «Сначала войдите»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Бронирование с неверным телефоном</td><td>Ошибка валидации телефона</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Бронирование с пустым именем</td><td>Ошибка валидации имени</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <h2>4. Админ-панель</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Вход с правильным паролем</td><td>Доступ к панели управления</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Вход с неправильным паролем</td><td>Ошибка «Неверный пароль»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Просмотр списка пользователей</td><td>Таблица с пользователями</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Блокировка пользователя</td><td>Статус меняется на «Заблокирован»</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Удаление пользователя</td><td>Пользователь исчезает из списка</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Удаление бронирования</td><td>Бронь исчезает из списка</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <h2>5. Фильтрация меню</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Фильтр «Закуски»</td><td>Показываются только закуски</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Фильтр «Все»</td><td>Показываются все блюда</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <h2>6. Навигация</h2>
+        <table class="test-table">
+            <tr><th>Тест-кейс</th><th>Ожидаемый результат</th><th>Результат</th></tr>
+            <tr><td>Переход между страницами (меню, бронь, профиль)</td><td>Отображение соответствующих разделов</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+            <tr><td>Активная подсветка кнопки навигации</td><td>Текущая страница подсвечена</td><td class="status-pass">✅ ПРОЙДЕН</td></tr>
+        </table>
+
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Главная</span></a>
+        <a href="menu.html" class="nav-item"><i class="fas fa-utensils"></i><span>Меню</span></a>
+        <a href="booking.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Бронь</span></a>
+        <a href="account.html" class="nav-item"><i class="fas fa-user"></i><span>Профиль</span></a>
+    </nav>
+</body>
+</html>
