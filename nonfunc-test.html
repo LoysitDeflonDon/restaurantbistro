@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нефункциональное тестирование | Le Bistro Noir</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .docs-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #222;
+        }
+        .docs-container h1 { color: #c7a252; margin-bottom: 30px; }
+        .docs-container h2 { color: #c7a252; margin: 30px 0 15px; }
+        .docs-container p, .docs-container li { color: #ccc; line-height: 1.6; margin-bottom: 10px; }
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .test-table th, .test-table td {
+            padding: 12px;
+            border: 1px solid #333;
+            text-align: left;
+            vertical-align: top;
+        }
+        .test-table th {
+            background: #1a1a1a;
+            color: #c7a252;
+        }
+        .status-pass { color: #44ff44; }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #c7a252;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">LE BISTRO NOIR</h1>
+            <div class="header-badge">
+                <span class="header-date">Est. 2026</span>
+                <a href="tel:+7996936635" class="header-phone"><i class="fas fa-phone-alt"></i> +7 (996) 693-66-35</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <h1>⚡ Нефункциональное тестирование</h1>
+        <p>Оценка производительности, безопасности, удобства использования и надёжности сайта.</p>
+
+        <h2>1. Производительность</h2>
+        <table class="test-table">
+            <tr><th>Параметр</th><th>Результат</th><th>Оценка</th></tr>
+            <tr><td>Скорость загрузки главной страницы</td><td>~1.2 секунды (при кэшировании)</td><td class="status-pass">✅ Хорошо</td></tr>
+            <tr><td>Время ответа JSONBin API</td><td>0.3–0.8 секунды</td><td class="status-pass">✅ Приемлемо</td></tr>
+            <tr><td>Рендеринг меню (12 блюд)</td><td>Мгновенно</td><td class="status-pass">✅ Отлично</td></tr>
+            <tr><td>Загрузка админ-панели с данными</td><td>~0.5–1 секунда</td><td class="status-pass">✅ Хорошо</td></tr>
+        </table>
+
+        <h2>2. Безопасность</h2>
+        <table class="test-table">
+            <tr><th>Аспект</th><th>Реализация</th><th>Оценка</th></tr>
+            <tr><td>Хранение паролей</td><td>Пароли пользователей хранятся в открытом виде (учебный проект)</td><td>⚠️ Для продакшена требуется хеширование</td></tr>
+            <tr><td>Пароль админки</td><td>Хранится в открытом виде в коде admin.html</td><td>⚠️ Не для продакшена</td></tr>
+            <tr><td>API ключ JSONBin</td><td>Виден в коде (не рекомендуется для реальных проектов)</td><td>⚠️ Учебный вариант</td></tr>
+            <tr><td>Защита от брутфорса админки</td><td>Нет (за 5 попыток не блокирует)</td><td>⚠️ Можно добавить</td></tr>
+            <tr><td>Валидация телефона</td><td>Есть — строго 11 цифр</td><td class="status-pass">✅ Хорошо</td></tr>
+        </table>
+
+        <h2>3. Юзабилити (UX)</h2>
+        <table class="test-table">
+            <tr><th>Аспект</th><th>Оценка</th></tr>
+            <tr><td>Адаптивный дизайн (мобильные устройства)</td><td class="status-pass">✅ Реализован (viewport, нижняя навигация)</td></tr>
+            <tr><td>Интуитивность навигации</td><td class="status-pass">✅ Понятное меню, 4 основных раздела</td></tr>
+            <tr><td>Обратная связь при действиях (модальные окна)</td><td class="status-pass">✅ Есть уведомления об успехе/ошибке</td></tr>
+            <tr><td>Доступность (цветовой контраст)</td><td class="status-pass">✅ Белый на чёрном, норм</td></tr>
+            <tr><td>Валидация форм в реальном времени</td><td class="status-pass">✅ Есть для телефона, имени, пароля</td></tr>
+        </table>
+
+        <h2>4. Надёжность</h2>
+        <table class="test-table">
+            <tr><th>Сценарий</th><th>Поведение</th></tr>
+            <tr><td>Ошибка подключения к JSONBin</td><td>Пользователь видит сообщение об ошибке, сайт не падает</td></tr>
+            <tr><td>Неверный ответ от API</td><td>Обрабатывается через try/catch, показывается уведомление</td></tr>
+            <tr><td>Обновление страницы во время сессии</td><td>Пользователь остаётся авторизован (localStorage)</td></tr>
+            <tr><td>Одновременная работа админки и сайта</td><td>Данные синхронизируются через JSONBin</td></tr>
+        </table>
+
+        <h2>5. Совместимость</h2>
+        <table class="test-table">
+            <tr><th>Браузер</th><th>Результат</th></tr>
+            <tr><td>Google Chrome (последняя версия)</td><td class="status-pass">✅ Корректно</td></tr>
+            <tr><td>Mozilla Firefox</td><td class="status-pass">✅ Корректно</td></tr>
+            <tr><td>Safari (iOS)</td><td class="status-pass">✅ Корректно</td></tr>
+            <tr><td>Яндекс Браузер</td><td class="status-pass">✅ Корректно</td></tr>
+        </table>
+
+        <h2>6. Выводы</h2>
+        <p>Сайт успешно проходит функциональное тестирование. По нефункциональным требованиям: производительность и юзабилити на высоком уровне. Безопасность требует доработки для реального продакшена (хеширование паролей, скрытие API ключа). Для учебного проекта текущий уровень приемлем.</p>
+
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Главная</span></a>
+        <a href="menu.html" class="nav-item"><i class="fas fa-utensils"></i><span>Меню</span></a>
+        <a href="booking.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Бронь</span></a>
+        <a href="account.html" class="nav-item"><i class="fas fa-user"></i><span>Профиль</span></a>
+    </nav>
+</body>
+</html>
