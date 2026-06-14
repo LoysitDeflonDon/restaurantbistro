@@ -1,8 +1,8 @@
 // ========== НАСТРОЙКИ JSONBIN ==========
 // ЗАМЕНИ ЭТИ ТРИ СТРОКИ НА СВОИ ДАННЫЕ!
-const MASTER_KEY = '$2a$10$Y3Bvspn5CW0kIKhSPjwmn.vCT3aK4XdU9F0ejiihLjC68NLFPDkES';           // API ключ с jsonbin.io
-const USERS_BIN_ID = '6a2f23fbf5f4af5e29f1e591';        // ID бина с пользователями
-const BOOKINGS_BIN_ID = '6a2f2416da38895dfec06521';     // ID бина с бронями
+const MASTER_KEY = '$2a$10$LX5oylJg7sUo03LV/.UGeeeJB8Qbq3FHt1N8uL9zvuzCCW4wDxNX.';           // API ключ с jsonbin.io
+const USERS_BIN_ID = '6a2f2c6eda38895dfec07f8a';        // ID бина с пользователями
+const BOOKINGS_BIN_ID = '6a2f2c7bf5f4af5e29f20087';     // ID бина с бронями
 
 let currentUser = null;
 let menuData = [];
