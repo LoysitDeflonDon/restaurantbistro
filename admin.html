@@ -2,69 +2,56 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админка | Le Bistro (JSONBin)</title>
+    <title>Админка | Le Bistro</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .login-box, .panel { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #c7a252; text-align: center; width: 350px; }
+        body { background: #0a0a0a; color: white; font-family: sans-serif; padding: 20px; }
+        .login-box, .panel { background: #111; padding: 40px; border-radius: 20px; border: 1px solid #c7a252; max-width: 400px; margin: 0 auto; text-align: center; }
         input { width: 100%; padding: 12px; margin: 15px 0; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 10px; }
-        button { background: #c7a252; color: black; border: none; padding: 12px 24px; border-radius: 40px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .error { color: #ff4444; margin-top: 10px; display: none; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .admin-table th, .admin-table td { padding: 8px; text-align: left; border-bottom: 1px solid #333; }
+        button { background: #c7a252; color: black; border: none; padding: 12px 24px; border-radius: 40px; cursor: pointer; font-weight: bold; }
+        .error { color: #ff4444; display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #1a1a1a; border-radius: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
         .btn-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; margin: 0 3px; }
-        .btn-icon.delete { color: #ff4444; }
-        .btn-icon.block { color: #ffaa00; }
-        .stats { display: flex; gap: 15px; margin-bottom: 20px; justify-content: center; }
+        .stats { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
         .stat-card { background: #1a1a1a; padding: 10px 20px; border-radius: 15px; }
-        .stat-number { font-size: 1.8rem; font-weight: bold; color: #c7a252; }
-        h2, h3 { color: #c7a252; margin-bottom: 15px; }
-        .logout-btn { margin-top: 20px; background: #333; }
     </style>
 </head>
 <body>
 
 <div id="loginBox" class="login-box">
-    <h2>🔐 Админ-панель</h2>
-    <input type="password" id="passwordInput" placeholder="Пароль">
+    <h2>🔐 Админка</h2>
+    <input type="password" id="adminPassword" placeholder="Пароль">
     <div id="errorMsg" class="error">Неверный пароль</div>
     <button id="loginBtn">Войти</button>
 </div>
 
-<div id="adminPanel" class="panel" style="display:none; width: 90%; max-width: 1200px;">
-    <h2>👑 Управление рестораном</h2>
-    
+<div id="adminPanel" class="panel" style="display:none; max-width: 1200px;">
+    <h2>👑 Управление</h2>
     <div class="stats">
-        <div class="stat-card"><div class="stat-number" id="statUsers">0</div><div>Пользователей</div></div>
-        <div class="stat-card"><div class="stat-number" id="statBlocked">0</div><div>Заблокировано</div></div>
-        <div class="stat-card"><div class="stat-number" id="statBookings">0</div><div>Броней</div></div>
+        <div class="stat-card"><span id="statUsers">0</span> пользователей</div>
+        <div class="stat-card"><span id="statBlocked">0</span> заблокировано</div>
+        <div class="stat-card"><span id="statBookings">0</span> броней</div>
     </div>
-
     <h3>👥 Пользователи</h3>
     <div id="usersList">Загрузка...</div>
-
     <h3>📅 Бронирования</h3>
     <div id="bookingsList">Загрузка...</div>
-
-    <button id="logoutBtn" class="logout-btn">Выйти</button>
+    <button id="logoutBtn">Выйти</button>
 </div>
 
 <script>
-    // ========== НАСТРОЙКИ JSONBIN (ЗАМЕНИ НА СВОИ!) ==========
-    const MASTER_KEY = '$2a$10$LX5oylJg7sUo03LV/.UGeeeJB8Qbq3FHt1N8uL9zvuzCCW4wDxNX.';   // API ключ с jsonbin.io
-    const USERS_BIN_ID = '6a2f2c6eda38895dfec07f8a';  // ID бина с пользователями
-    const BOOKINGS_BIN_ID = '6a2f2c7bf5f4af5e29f20087'; // ID бина с бронями
-    
-    // ПАРОЛЬ АДМИНА (простой, как в работающем примере)
+    // ========== ТВОИ ДАННЫЕ ==========
+    const MASTER_KEY = '$2a$10$LX5oylJg7sUo03LV/.UGeeeJB8Qbq3FHt1N8uL9zvuzCCW4wDxNX.';
+    const USERS_BIN_ID = '6a2f2c6eda38895dfec07f8a';
+    const BOOKINGS_BIN_ID = '6a2f2c7bf5f4af5e29f20087';
     const ADMIN_PASSWORD = 'Xk9#mP2$vL7@qR4!wN6&';
     
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    // ========== ЗАПРОСЫ К JSONBIN ==========
     async function fetchBin(binId) {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
             headers: { 'X-Master-Key': MASTER_KEY }
         });
         const data = await res.json();
-        // Определяем структуру
         if (data.record && data.record.users !== undefined) return data.record.users;
         if (data.record && data.record.bookings !== undefined) return data.record.bookings;
         return data.record;
@@ -73,183 +60,124 @@
     async function updateBin(binId, data) {
         let payload;
         if (binId === USERS_BIN_ID) payload = { users: data };
-        else if (binId === BOOKINGS_BIN_ID) payload = { bookings: data };
-        else payload = data;
+        else payload = { bookings: data };
         
         await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': MASTER_KEY
-            },
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
             body: JSON.stringify(payload)
         });
     }
     
-    // ========== ДЕЙСТВИЯ С ДАННЫМИ ==========
-    async function toggleBlockUser(userId, currentStatus) {
+    // ========== ДЕЙСТВИЯ (ГЛОБАЛЬНЫЕ) ==========
+    window.toggleBlockUser = async function(userId, currentStatus) {
         let users = await fetchBin(USERS_BIN_ID);
         const index = users.findIndex(u => u.id == userId);
         if (index !== -1) {
             users[index].blocked = !currentStatus;
             await updateBin(USERS_BIN_ID, users);
-            renderUsers();
+            await renderUsers();
         }
-    }
+    };
     
-    async function deleteUser(userId) {
-        if (!confirm('Удалить пользователя навсегда?')) return;
+    window.deleteUser = async function(userId) {
+        if (!confirm('Удалить пользователя?')) return;
         let users = await fetchBin(USERS_BIN_ID);
         users = users.filter(u => u.id != userId);
         await updateBin(USERS_BIN_ID, users);
-        renderUsers();
-        showMessage('Пользователь удалён');
-    }
+        await renderUsers();
+        alert('Удалён');
+    };
     
-    async function deleteBooking(bookingId) {
-        if (!confirm('Удалить бронирование?')) return;
+    window.deleteBooking = async function(bookingId) {
+        if (!confirm('Удалить бронь?')) return;
         let bookings = await fetchBin(BOOKINGS_BIN_ID);
         bookings = bookings.filter(b => b.id != bookingId);
         await updateBin(BOOKINGS_BIN_ID, bookings);
-        renderBookings();
-        showMessage('Бронирование удалено');
-    }
-    
-    function showMessage(msg) {
-        alert(msg);
-    }
+        await renderBookings();
+        alert('Бронь удалена');
+    };
     
     // ========== ОТРИСОВКА ==========
     async function renderUsers() {
-        const container = document.getElementById('usersList');
-        try {
-            let users = await fetchBin(USERS_BIN_ID);
-            if (!users || users.length === 0) {
-                container.innerHTML = '<p>Нет пользователей</p>';
-                document.getElementById('statUsers').innerText = '0';
-                document.getElementById('statBlocked').innerText = '0';
-                return;
-            }
-            
-            const blockedCount = users.filter(u => u.blocked === true).length;
-            document.getElementById('statUsers').innerText = users.length;
-            document.getElementById('statBlocked').innerText = blockedCount;
-            
-            let html = '<table class="admin-table"><tr><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Статус</th><th>Действия</th></tr>';
-            users.forEach(u => {
-                html += `
-                    <tr>
-                        <td>${u.id}</td>
-                        <td>${escapeHtml(u.name)}</td>
-                        <td>${escapeHtml(u.email)}</td>
-                        <td>${u.phone}</td>
-                        <td>${u.blocked ? '<span style="color:#ff4444">Заблокирован</span>' : '<span style="color:#44ff44">Активен</span>'}</td>
-                        <td>
-                            <button class="btn-icon block" onclick="toggleBlockUser(${u.id}, ${!!u.blocked})">🔨</button>
-                            <button class="btn-icon delete" onclick="deleteUser(${u.id})">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            html += '</table>';
-            container.innerHTML = html;
-        } catch(e) {
-            container.innerHTML = '<p style="color:#ff4444">Ошибка загрузки пользователей. Проверьте MASTER_KEY и ID бинов.</p>';
-            console.error(e);
+        let users = await fetchBin(USERS_BIN_ID) || [];
+        document.getElementById('statUsers').innerText = users.length;
+        document.getElementById('statBlocked').innerText = users.filter(u => u.blocked).length;
+        
+        if (users.length === 0) {
+            document.getElementById('usersList').innerHTML = '<p>Нет пользователей</p>';
+            return;
         }
+        
+        let html = '<table><tr><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Статус</th><th>Действия</th></tr>';
+        for (let u of users) {
+            html += `<tr>
+                <td>${u.id}</td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>${u.phone}</td>
+                <td>${u.blocked ? '🔴 Заблокирован' : '🟢 Активен'}</td>
+                <td>
+                    <button class="btn-icon" onclick="toggleBlockUser(${u.id}, ${!!u.blocked})">${u.blocked ? '🔓' : '🔨'}</button>
+                    <button class="btn-icon delete" onclick="deleteUser(${u.id})">🗑️</button>
+                </td>
+            </tr>`;
+        }
+        html += '</table>';
+        document.getElementById('usersList').innerHTML = html;
     }
     
     async function renderBookings() {
-        const container = document.getElementById('bookingsList');
-        try {
-            let bookings = await fetchBin(BOOKINGS_BIN_ID);
-            if (!bookings || bookings.length === 0) {
-                container.innerHTML = '<p>Нет бронирований</p>';
-                document.getElementById('statBookings').innerText = '0';
-                return;
-            }
-            document.getElementById('statBookings').innerText = bookings.length;
-            
-            let html = '<table class="admin-table"><tr><th>ID</th><th>Имя</th><th>Телефон</th><th>Дата</th><th>Время</th><th>Гостей</th><th>Действия</th></tr>';
-            bookings.forEach(b => {
-                html += `
-                    <tr>
-                        <td>${b.id}</td>
-                        <td>${escapeHtml(b.name)}</td>
-                        <td>${b.phone}</td>
-                        <td>${b.date}</td>
-                        <td>${b.time}</td>
-                        <td>${b.guests}</td>
-                        <td><button class="btn-icon delete" onclick="deleteBooking(${b.id})">🗑️</button></td>
-                    </tr>
-                `;
-            });
-            html += '</table>';
-            container.innerHTML = html;
-        } catch(e) {
-            container.innerHTML = '<p style="color:#ff4444">Ошибка загрузки броней</p>';
-            console.error(e);
+        let bookings = await fetchBin(BOOKINGS_BIN_ID) || [];
+        document.getElementById('statBookings').innerText = bookings.length;
+        
+        if (bookings.length === 0) {
+            document.getElementById('bookingsList').innerHTML = '<p>Нет броней</p>';
+            return;
         }
+        
+        let html = '<table><tr><th>ID</th><th>Имя</th><th>Телефон</th><th>Дата</th><th>Время</th><th>Гостей</th><th>Действия</th></tr>';
+        for (let b of bookings) {
+            html += `<tr>
+                <td>${b.id}</td>
+                <td>${b.name}</td>
+                <td>${b.phone}</td>
+                <td>${b.date}</td>
+                <td>${b.time}</td>
+                <td>${b.guests}</td>
+                <td><button class="btn-icon delete" onclick="deleteBooking(${b.id})">🗑️</button></td>
+            </tr>`;
+        }
+        html += '</table>';
+        document.getElementById('bookingsList').innerHTML = html;
     }
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    // ========== ЛОГИН/ЛОГАУТ (как в простом примере) ==========
-    const loginBox = document.getElementById('loginBox');
-    const adminPanel = document.getElementById('adminPanel');
-    const passwordInput = document.getElementById('passwordInput');
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    
-    async function handleLogin() {
-        const password = passwordInput.value;
-        if (password === ADMIN_PASSWORD) {
-            loginBox.style.display = 'none';
-            adminPanel.style.display = 'block';
-            sessionStorage.setItem('adminLoggedIn', 'true');
-            errorMsg.style.display = 'none';
-            // Загружаем данные
+    // ========== ЛОГИН ==========
+    document.getElementById('loginBtn').onclick = async function() {
+        const pwd = document.getElementById('adminPassword').value;
+        if (pwd === ADMIN_PASSWORD) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
             await renderUsers();
             await renderBookings();
+            sessionStorage.setItem('adminLoggedIn', 'true');
         } else {
-            errorMsg.style.display = 'block';
-            passwordInput.value = '';
+            document.getElementById('errorMsg').style.display = 'block';
         }
-    }
+    };
     
-    function handleLogout() {
-        loginBox.style.display = 'block';
-        adminPanel.style.display = 'none';
+    document.getElementById('logoutBtn').onclick = function() {
+        document.getElementById('loginBox').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
         sessionStorage.removeItem('adminLoggedIn');
-        passwordInput.value = '';
-    }
-    
-    loginBtn.onclick = handleLogin;
-    logoutBtn.onclick = handleLogout;
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
-    });
+    };
     
     if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-        loginBox.style.display = 'none';
-        adminPanel.style.display = 'block';
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
         renderUsers();
         renderBookings();
     }
-    
-    // Делаем функции глобальными для onclick
-    window.toggleBlockUser = toggleBlockUser;
-    window.deleteUser = deleteUser;
-    window.deleteBooking = deleteBooking;
 </script>
 </body>
 </html>
