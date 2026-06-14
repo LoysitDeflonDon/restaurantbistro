@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Bistro Noir | Админ-панель 🔒</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #c7a252; margin-bottom: 20px; border-bottom: 2px solid #c7a252; padding-bottom: 10px; }
+        h2 { color: #c7a252; margin: 30px 0 15px; font-size: 1.5rem; }
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #c7a252;
+            text-align: center;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
+            margin: 15px 0;
+            font-size: 1rem;
+        }
+        .login-box input:focus { outline: none; border-color: #c7a252; }
+        .btn {
+            background: #c7a252;
+            color: #0a0a0a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-small {
+            background: #c7a252;
+            color: #0a0a0a;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #c7a252;
+            color: #c7a252;
+        }
+        .admin-section {
+            background: #111;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #222;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #222;
+        }
+        .admin-table th { color: #c7a252; }
+        .admin-table tr:hover { background: #1a1a1a; }
+        .badge {
+            background: #c7a252;
+            color: #0a0a0a;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .badge-blocked { background: #ff4444; color: white; }
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin: 0 5px;
+        }
+        .btn-icon.block { color: #ff4444; }
+        .btn-icon.unblock { color: #44ff44; }
+        .btn-icon.delete { color: #ff4444; }
+        .error-msg { color: #ff4444; font-size: 0.8rem; margin-top: 5px; display: none; }
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #c7a252; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #c7a252;
+            z-index: 1000;
+            text-align: center;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .locked-msg { color: #ff4444; margin-top: 10px; font-size: 0.85rem; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-shield-alt"></i> Le Bistro Noir — Админ-панель</h1>
+
+        <div id="adminLoginBlock" class="login-box">
+            <i class="fas fa-lock" style="font-size: 48px; color: #c7a252;"></i>
+            <h2>Вход для администратора</h2>
+            <input type="password" id="adminPassword" placeholder="Введите пароль">
+            <div class="error-msg" id="adminPassError">Неверный пароль</div>
+            <div class="locked-msg" id="lockedMsg">🔒 Слишком много попыток. Подождите 15 минут.</div>
+            <button id="adminLoginBtn" class="btn">Войти <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <div id="adminPanelBlock" style="display: none;">
+            <div class="stats">
+                <div class="stat-card"><div class="stat-number" id="statUsers">0</div><div>Пользователей</div></div>
+                <div class="stat-card"><div class="stat-number" id="statBlocked">0</div><div>Заблокировано</div></div>
+                <div class="stat-card"><div class="stat-number" id="statBookings">0</div><div>Броней</div></div>
+            </div>
+
+            <div class="admin-section">
+                <div class="flex-between">
+                    <h2><i class="fas fa-users"></i> Пользователи</h2>
+                    <button id="refreshUsersBtn" class="btn-small"><i class="fas fa-sync-alt"></i> Обновить</button>
+                </div>
+                <div id="usersList">Загрузка...</div>
+            </div>
+
+            <div class="admin-section">
+                <div class="flex-between">
+                    <h2><i class="fas fa-calendar-check"></i> Бронирования</h2>
+                    <button id="refreshBookingsBtn" class="btn-small"><i class="fas fa-sync-alt"></i> Обновить</button>
+                </div>
+                <div id="bookingsList">Загрузка...</div>
+            </div>
+
+            <button id="adminLogoutBtn" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+        </div>
+    </div>
+
+    <div id="modal" class="modal"><div id="modalMsg"></div><button onclick="closeModal()" class="btn-small">Ок</button></div>
+    <div id="overlay" class="overlay" onclick="closeModal()"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+    <script>
+        // ========== НАСТРОЙКИ ==========
+        const MASTER_KEY = '$2a$10$Y3Bvspn5CW0kIKhSPjwmn.vCT3aK4XdU9F0ejiihLjC68NLFPDkES;
+        const USERS_BIN_ID = '6a2f23fbf5f4af5e29f1e591';
+        const BOOKINGS_BIN_ID = '6a2f2416da38895dfec06521';
+        const ADMIN_PASS_BIN_ID = '6a2f29eff5f4af5e29f1f93b';
+
+        // ========== ЗАЩИТА ОТ ВЗЛОМА ==========
+        let failedAttempts = 0;
+        let lockUntil = null;
+
+        function isLocked() {
+            if (lockUntil && Date.now() < lockUntil) return true;
+            if (lockUntil && Date.now() >= lockUntil) {
+                lockUntil = null;
+                failedAttempts = 0;
+            }
+            return false;
+        }
+
+        function recordFailedAttempt() {
+            failedAttempts++;
+            if (failedAttempts >= 5) {
+                lockUntil = Date.now() + 15 * 60 * 1000; // 15 минут блокировки
+                document.getElementById('lockedMsg').style.display = 'block';
+                document.getElementById('adminPassword').disabled = true;
+                document.getElementById('adminLoginBtn').disabled = true;
+                setTimeout(() => {
+                    lockUntil = null;
+                    failedAttempts = 0;
+                    document.getElementById('lockedMsg').style.display = 'none';
+                    document.getElementById('adminPassword').disabled = false;
+                    document.getElementById('adminLoginBtn').disabled = false;
+                }, 15 * 60 * 1000);
+            }
+        }
+
+        // ========== РАБОТА С JSONBIN ==========
+        async function fetchBin(binId) {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                headers: { 'X-Master-Key': MASTER_KEY }
+            });
+            const data = await res.json();
+            if (data.record && (data.record.users !== undefined)) return data.record.users;
+            if (data.record && (data.record.bookings !== undefined)) return data.record.bookings;
+            return data.record;
+        }
+
+        async function updateBin(binId, arrayData) {
+            let payload;
+            if (binId === USERS_BIN_ID) payload = { users: arrayData };
+            else if (binId === BOOKINGS_BIN_ID) payload = { bookings: arrayData };
+            else payload = arrayData;
+            
+            await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': MASTER_KEY
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        // ========== ПРОВЕРКА ПАРОЛЯ АДМИНА ==========
+        async function checkAdminPassword(password) {
+            const passData = await fetchBin(ADMIN_PASS_BIN_ID);
+            const hash = passData.hash || passData;
+            return bcrypt.compareSync(password, hash);
+        }
+
+        // ========== БЛОКИРОВКА/РАЗБЛОКИРОВКА ПОЛЬЗОВАТЕЛЯ ==========
+        async function toggleBlockUser(userId, currentStatus) {
+            let users = await fetchBin(USERS_BIN_ID);
+            const userIndex = users.findIndex(u => u.id == userId);
+            if (userIndex !== -1) {
+                users[userIndex].blocked = !currentStatus;
+                await updateBin(USERS_BIN_ID, users);
+                renderUsers();
+            }
+        }
+
+        async function deleteUser(userId) {
+            let users = await fetchBin(USERS_BIN_ID);
+            users = users.filter(u => u.id != userId);
+            await updateBin(USERS_BIN_ID, users);
+            renderUsers();
+        }
+
+        async function deleteBooking(bookingId) {
+            let bookings = await fetchBin(BOOKINGS_BIN_ID);
+            bookings = bookings.filter(b => b.id != bookingId);
+            await updateBin(BOOKINGS_BIN_ID, bookings);
+            renderBookings();
+        }
+
+        // ========== ОТРИСОВКА ==========
+        async function renderUsers() {
+            const container = document.getElementById('usersList');
+            let users = await fetchBin(USERS_BIN_ID);
+            if (!users || users.length === 0) {
+                container.innerHTML = '<p>Нет пользователей</p>';
+                document.getElementById('statUsers').innerText = '0';
+                document.getElementById('statBlocked').innerText = '0';
+                return;
+            }
+            
+            const blockedCount = users.filter(u => u.blocked === true).length;
+            document.getElementById('statUsers').innerText = users.length;
+            document.getElementById('statBlocked').innerText = blockedCount;
+            
+            const html = `
+                <table class="admin-table">
+                    <thead>
+                        <tr><th>ID</th><th>Имя</th><th>Email</th><th>Телефон</th><th>Статус</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(u => `
+                            <tr>
+                                <td>${u.id}</td>
+                                <td>${escapeHtml(u.name)}</td>
+                                <td>${escapeHtml(u.email)}</td>
+                                <td>${u.phone}</td>
+                                <td>${u.blocked ? '<span class="badge badge-blocked">Заблокирован</span>' : '<span class="badge">Активен</span>'}</td>
+                                <td>
+                                    <button class="btn-icon ${u.blocked ? 'unblock' : 'block'}" onclick="toggleBlockUser(${u.id}, ${!!u.blocked})" title="${u.blocked ? 'Разблокировать' : 'Заблокировать'}">
+                                        <i class="fas ${u.blocked ? 'fa-unlock-alt' : 'fa-ban'}"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="deleteUser(${u.id})" title="Удалить">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function renderBookings() {
+            const container = document.getElementById('bookingsList');
+            let bookings = await fetchBin(BOOKINGS_BIN_ID);
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = '<p>Нет бронирований</p>';
+                document.getElementById('statBookings').innerText = '0';
+                return;
+            }
+            document.getElementById('statBookings').innerText = bookings.length;
+            
+            const html = `
+                <table class="admin-table">
+                    <thead><tr><th>ID</th><th>Имя</th><th>Телефон</th><th>Дата</th><th>Время</th><th>Гостей</th><th>Действия</th></tr></thead>
+                    <tbody>
+                        ${bookings.map(b => `
+                            <tr>
+                                <td>${b.id}</td>
+                                <td>${escapeHtml(b.name)}</td>
+                                <td>${b.phone}</td>
+                                <td>${b.date}</td>
+                                <td>${b.time}</td>
+                                <td>${b.guests}</td>
+                                <td>
+                                    <button class="btn-icon delete" onclick="deleteBooking(${b.id})" title="Удалить бронь">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // ========== МОДАЛКА ==========
+        function showModal(msg) {
+            document.getElementById('modalMsg').innerText = msg;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+        window.closeModal = function() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        };
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        let adminLoggedIn = false;
+
+        async function handleAdminLogin() {
+            if (isLocked()) {
+                showModal('Слишком много попыток. Подождите 15 минут.');
+                return;
+            }
+            const password = document.getElementById('adminPassword').value;
+            const isValid = await checkAdminPassword(password);
+            if (isValid) {
+                adminLoggedIn = true;
+                document.getElementById('adminLoginBlock').style.display = 'none';
+                document.getElementById('adminPanelBlock').style.display = 'block';
+                await renderUsers();
+                await renderBookings();
+                sessionStorage.setItem('adminLoggedIn', 'true');
+            } else {
+                recordFailedAttempt();
+                document.getElementById('adminPassError').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('adminPassError').style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        function logout() {
+            adminLoggedIn = false;
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('adminLoginBlock').style.display = 'block';
+            document.getElementById('adminPanelBlock').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        // Анти-devtools (зашумление консоли)
+        console.log('%cStop!', 'color: red; font-size: 40px; font-weight: bold;');
+        console.log('%cЭто инструмент для разработчиков. Если вас попросили что-то вставить сюда — это мошенничество.', 'color: yellow; font-size: 14px;');
+        
+        setInterval(() => {
+            console.clear();
+        }, 3000);
+
+        // ========== СОБЫТИЯ ==========
+        document.getElementById('adminLoginBtn').onclick = handleAdminLogin;
+        document.getElementById('adminLogoutBtn').onclick = logout;
+        document.getElementById('refreshUsersBtn').onclick = renderUsers;
+        document.getElementById('refreshBookingsBtn').onclick = renderBookings;
+        
+        document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAdminLogin();
+        });
+
+        window.toggleBlockUser = toggleBlockUser;
+        window.deleteUser = deleteUser;
+        window.deleteBooking = deleteBooking;
+
+        // Проверка сессии
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            document.getElementById('adminLoginBlock').style.display = 'none';
+            document.getElementById('adminPanelBlock').style.display = 'block';
+            renderUsers();
+            renderBookings();
+        }
+    </script>
+</body>
+</html>
