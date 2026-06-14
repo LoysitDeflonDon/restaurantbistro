@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Bistro Noir | Админ-панель 🔒</title>
+    <title>Le Bistro Noir | Админ-панель</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,7 +47,6 @@
             <h2>Вход для администратора</h2>
             <input type="password" id="adminPassword" placeholder="Введите пароль">
             <div class="error-msg" id="adminPassError">Неверный пароль</div>
-            <div class="locked-msg" id="lockedMsg">🔒 Слишком много попыток. Подождите 15 минут.</div>
             <button id="adminLoginBtn" class="btn">Войти <i class="fas fa-arrow-right"></i></button>
         </div>
 
@@ -81,7 +80,6 @@
     <div id="modal" class="modal"><div id="modalMsg"></div><button onclick="closeModal()" class="btn-small">Ок</button></div>
     <div id="overlay" class="overlay" onclick="closeModal()"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
     <script>
         // ========== НАСТРОЙКИ ==========
         const MASTER_KEY = '$2a$10$LX5oylJg7sUo03LV/.UGeeeJB8Qbq3FHt1N8uL9zvuzCCW4wDxNX.';
@@ -89,53 +87,18 @@
         const USERS_BIN_ID = '6a2f2c6eda38895dfec07f8a';
         const BOOKINGS_BIN_ID = '6a2f2c7bf5f4af5e29f20087';
         
-        // ХЕШ ПАРОЛЯ
-        const ADMIN_PASS_HASH = '$2a$10$TtKxL7qZpVqZpVqZpVqZpu5qWUz7yYYdKrO6zKXZy5Q8q3Qtq3Qtq';
+        // ПАРОЛЬ ДЛЯ АДМИНКИ
+        const ADMIN_PASSWORD = 'Xk9#mP2$vL7@qR4!wN6&';
 
-        let failedAttempts = 0;
-        let lockUntil = null;
-
-        function isLocked() {
-            if (lockUntil && Date.now() < lockUntil) return true;
-            if (lockUntil && Date.now() >= lockUntil) {
-                lockUntil = null;
-                failedAttempts = 0;
-            }
-            return false;
-        }
-
-        function recordFailedAttempt() {
-            failedAttempts++;
-            if (failedAttempts >= 5) {
-                lockUntil = Date.now() + 15 * 60 * 1000;
-                document.getElementById('lockedMsg').style.display = 'block';
-                document.getElementById('adminPassword').disabled = true;
-                document.getElementById('adminLoginBtn').disabled = true;
-                setTimeout(() => {
-                    lockUntil = null;
-                    failedAttempts = 0;
-                    document.getElementById('lockedMsg').style.display = 'none';
-                    document.getElementById('adminPassword').disabled = false;
-                    document.getElementById('adminLoginBtn').disabled = false;
-                }, 15 * 60 * 1000);
-            }
-        }
-
+        // ========== РАБОТА С JSONBIN ==========
         async function fetchBin(binId) {
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-                    headers: { 'X-Master-Key': MASTER_KEY }
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (data.record && data.record.users !== undefined) return data.record.users;
-                if (data.record && data.record.bookings !== undefined) return data.record.bookings;
-                return data.record;
-            } catch(e) {
-                console.error(e);
-                showModal('Ошибка подключения к БД. Проверь MASTER_KEY в коде');
-                return [];
-            }
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                headers: { 'X-Master-Key': MASTER_KEY }
+            });
+            const data = await res.json();
+            if (data.record && data.record.users !== undefined) return data.record.users;
+            if (data.record && data.record.bookings !== undefined) return data.record.bookings;
+            return data.record;
         }
 
         async function updateBin(binId, arrayData) {
@@ -154,11 +117,12 @@
             });
         }
 
-        // ========== ПРОВЕРКА ПАРОЛЯ (БЕЗ ПОЧТЫ) ==========
+        // ========== ПРОВЕРКА ПАРОЛЯ (ПРОСТАЯ) ==========
         function checkAdminPassword(password) {
-            return bcrypt.compareSync(password, ADMIN_PASS_HASH);
+            return password === ADMIN_PASSWORD;
         }
 
+        // ========== БЛОКИРОВКА/УДАЛЕНИЕ ==========
         async function toggleBlockUser(userId, currentStatus) {
             let users = await fetchBin(USERS_BIN_ID);
             const userIndex = users.findIndex(u => u.id == userId);
@@ -187,6 +151,7 @@
             showModal('Бронирование удалено');
         }
 
+        // ========== ОТРИСОВКА ==========
         async function renderUsers() {
             const container = document.getElementById('usersList');
             let users = await fetchBin(USERS_BIN_ID);
@@ -277,23 +242,18 @@
             document.getElementById('overlay').style.display = 'none';
         };
 
+        // ========== ВХОД В АДМИНКУ ==========
         async function handleAdminLogin() {
-            if (isLocked()) {
-                showModal('Слишком много попыток. Подождите 15 минут.');
-                return;
-            }
             const password = document.getElementById('adminPassword').value;
             if (!password) { showModal('Введите пароль'); return; }
             
-            const isValid = checkAdminPassword(password);
-            if (isValid) {
+            if (checkAdminPassword(password)) {
                 document.getElementById('adminLoginBlock').style.display = 'none';
                 document.getElementById('adminPanelBlock').style.display = 'block';
                 await renderUsers();
                 await renderBookings();
                 sessionStorage.setItem('adminLoggedIn', 'true');
             } else {
-                recordFailedAttempt();
                 document.getElementById('adminPassError').style.display = 'block';
                 setTimeout(() => {
                     document.getElementById('adminPassError').style.display = 'none';
@@ -308,10 +268,7 @@
             document.getElementById('adminPassword').value = '';
         }
 
-        // Анти-devtools
-        console.log('%cStop!', 'color: red; font-size: 40px; font-weight: bold;');
-        setInterval(() => { console.clear(); }, 3000);
-
+        // ========== СОБЫТИЯ ==========
         document.getElementById('adminLoginBtn').onclick = handleAdminLogin;
         document.getElementById('adminLogoutBtn').onclick = logout;
         document.getElementById('refreshUsersBtn').onclick = () => { renderUsers(); renderBookings(); };
