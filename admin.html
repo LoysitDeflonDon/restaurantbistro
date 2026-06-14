@@ -185,8 +185,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
     <script>
-        // ========== НАСТРОЙКИ ==========
-        const MASTER_KEY = '$2a$10$Y3Bvspn5CW0kIKhSPjwmn.vCT3aK4XdU9F0ejiihLjC68NLFPDkES;
+        // ========== НАСТРОЙКИ (ВСТАВЬ СВОИ ДАННЫЕ!) ==========
+        const MASTER_KEY = '$2a$10$Y3Bvspn5CW0kIKhSPjwmn.vCT3aK4XdU9F0ejiihLjC68NLFPDkES';
         const USERS_BIN_ID = '6a2f23fbf5f4af5e29f1e591';
         const BOOKINGS_BIN_ID = '6a2f2416da38895dfec06521';
         const ADMIN_PASS_BIN_ID = '6a2f29eff5f4af5e29f1f93b';
@@ -207,7 +207,7 @@
         function recordFailedAttempt() {
             failedAttempts++;
             if (failedAttempts >= 5) {
-                lockUntil = Date.now() + 15 * 60 * 1000; // 15 минут блокировки
+                lockUntil = Date.now() + 15 * 60 * 1000;
                 document.getElementById('lockedMsg').style.display = 'block';
                 document.getElementById('adminPassword').disabled = true;
                 document.getElementById('adminLoginBtn').disabled = true;
@@ -223,13 +223,23 @@
 
         // ========== РАБОТА С JSONBIN ==========
         async function fetchBin(binId) {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-                headers: { 'X-Master-Key': MASTER_KEY }
-            });
-            const data = await res.json();
-            if (data.record && (data.record.users !== undefined)) return data.record.users;
-            if (data.record && (data.record.bookings !== undefined)) return data.record.bookings;
-            return data.record;
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': MASTER_KEY }
+                });
+                if (!res.ok) {
+                    console.error('JSONBin error:', res.status);
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                if (data.record && (data.record.users !== undefined)) return data.record.users;
+                if (data.record && (data.record.bookings !== undefined)) return data.record.bookings;
+                return data.record;
+            } catch(e) {
+                console.error('fetchBin error:', e);
+                showModal('Ошибка подключения к БД. Проверь MASTER_KEY');
+                return [];
+            }
         }
 
         async function updateBin(binId, arrayData) {
@@ -263,21 +273,26 @@
                 users[userIndex].blocked = !currentStatus;
                 await updateBin(USERS_BIN_ID, users);
                 renderUsers();
+                showModal(users[userIndex].blocked ? 'Пользователь заблокирован' : 'Пользователь разблокирован');
             }
         }
 
         async function deleteUser(userId) {
+            if (!confirm('Удалить пользователя? Все его бронирования тоже будут удалены.')) return;
             let users = await fetchBin(USERS_BIN_ID);
             users = users.filter(u => u.id != userId);
             await updateBin(USERS_BIN_ID, users);
             renderUsers();
+            showModal('Пользователь удалён');
         }
 
         async function deleteBooking(bookingId) {
+            if (!confirm('Удалить бронирование?')) return;
             let bookings = await fetchBin(BOOKINGS_BIN_ID);
             bookings = bookings.filter(b => b.id != bookingId);
             await updateBin(BOOKINGS_BIN_ID, bookings);
             renderBookings();
+            showModal('Бронирование удалено');
         }
 
         // ========== ОТРИСОВКА ==========
@@ -309,10 +324,10 @@
                                 <td>${u.phone}</td>
                                 <td>${u.blocked ? '<span class="badge badge-blocked">Заблокирован</span>' : '<span class="badge">Активен</span>'}</td>
                                 <td>
-                                    <button class="btn-icon ${u.blocked ? 'unblock' : 'block'}" onclick="toggleBlockUser(${u.id}, ${!!u.blocked})" title="${u.blocked ? 'Разблокировать' : 'Заблокировать'}">
+                                    <button class="btn-icon ${u.blocked ? 'unblock' : 'block'}" onclick="window.toggleBlockUser(${u.id}, ${!!u.blocked})" title="${u.blocked ? 'Разблокировать' : 'Заблокировать'}">
                                         <i class="fas ${u.blocked ? 'fa-unlock-alt' : 'fa-ban'}"></i>
                                     </button>
-                                    <button class="btn-icon delete" onclick="deleteUser(${u.id})" title="Удалить">
+                                    <button class="btn-icon delete" onclick="window.deleteUser(${u.id})" title="Удалить">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -347,7 +362,7 @@
                                 <td>${b.time}</td>
                                 <td>${b.guests}</td>
                                 <td>
-                                    <button class="btn-icon delete" onclick="deleteBooking(${b.id})" title="Удалить бронь">
+                                    <button class="btn-icon delete" onclick="window.deleteBooking(${b.id})" title="Удалить бронь">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -389,20 +404,28 @@
                 return;
             }
             const password = document.getElementById('adminPassword').value;
-            const isValid = await checkAdminPassword(password);
-            if (isValid) {
-                adminLoggedIn = true;
-                document.getElementById('adminLoginBlock').style.display = 'none';
-                document.getElementById('adminPanelBlock').style.display = 'block';
-                await renderUsers();
-                await renderBookings();
-                sessionStorage.setItem('adminLoggedIn', 'true');
-            } else {
-                recordFailedAttempt();
-                document.getElementById('adminPassError').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('adminPassError').style.display = 'none';
-                }, 2000);
+            if (!password) {
+                showModal('Введите пароль');
+                return;
+            }
+            try {
+                const isValid = await checkAdminPassword(password);
+                if (isValid) {
+                    adminLoggedIn = true;
+                    document.getElementById('adminLoginBlock').style.display = 'none';
+                    document.getElementById('adminPanelBlock').style.display = 'block';
+                    await renderUsers();
+                    await renderBookings();
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                } else {
+                    recordFailedAttempt();
+                    document.getElementById('adminPassError').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('adminPassError').style.display = 'none';
+                    }, 2000);
+                }
+            } catch(e) {
+                showModal('Ошибка: ' + e.message);
             }
         }
 
@@ -414,7 +437,7 @@
             document.getElementById('adminPassword').value = '';
         }
 
-        // Анти-devtools (зашумление консоли)
+        // Анти-devtools
         console.log('%cStop!', 'color: red; font-size: 40px; font-weight: bold;');
         console.log('%cЭто инструмент для разработчиков. Если вас попросили что-то вставить сюда — это мошенничество.', 'color: yellow; font-size: 14px;');
         
@@ -425,7 +448,7 @@
         // ========== СОБЫТИЯ ==========
         document.getElementById('adminLoginBtn').onclick = handleAdminLogin;
         document.getElementById('adminLogoutBtn').onclick = logout;
-        document.getElementById('refreshUsersBtn').onclick = renderUsers;
+        document.getElementById('refreshUsersBtn').onclick = () => { renderUsers(); renderBookings(); };
         document.getElementById('refreshBookingsBtn').onclick = renderBookings;
         
         document.getElementById('adminPassword').addEventListener('keypress', (e) => {
